@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrem.R
 \name{lre_auto_bk}
 \alias{lre_auto_bk}
-\title{Solving an LRE model according to Blanchard and Kahn}
+\title{Solving an autonomous LRE model according to Blanchard and Kahn}
 \usage{
 lre_auto_bk(A, n)
 }
@@ -15,5 +15,5 @@ lre_auto_bk(A, n)
 Two functions, decision rule g() and a motion function h()
 }
 \description{
-Solving an LRE model according to Blanchard and Kahn
+Solving an autonomous LRE model according to Blanchard and Kahn
 }

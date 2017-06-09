@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrem.R
 \name{lre_auto}
 \alias{lre_auto}
-\title{A combination of the Klein and Blanchard, Kahn methods.}
+\title{A combination of the Klein and Blanchard, Kahn methods for the autonomous case.}
 \usage{
 lre_auto(A, E = NULL, n)
 }
@@ -17,5 +17,5 @@ lre_auto(A, E = NULL, n)
 Motion and decision rule functions according to either the Blanchard Kahn approach or through the Klein method
 }
 \description{
-A combination of the Klein and Blanchard, Kahn methods.
+A combination of the Klein and Blanchard, Kahn methods for the autonomous case.
 }
