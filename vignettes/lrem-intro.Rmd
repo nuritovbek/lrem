@@ -1,5 +1,5 @@
 de---
-title: "Using the lrem package"
+title: "Using the lre_auto function"
 author: "Ulugbek Nuritov"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -9,11 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette documents how to use the lrem package to solve for a range of linear rational expectations models. Currently the package should solve linear difference models of autonomous type, with the assumption that there are no external shocks. 
+This vignette documents how to use the lre_auto function in the package to solve for a range of linear rational expectations models. 
 
 Essentially, the package contains several wrapper functions for objects in the QZ package so as to output solutions to LRE models according to Blanchard and Kahn(1980) or Klein(2000) methods.
 
-The main function to call is lre_auto however the package also contains 2 specific functions to directly get either the Klein or the Blanchard and Kahn solutions.
+The main function to call is lre_auto however there are also 2 specific functions for an autonomous model to directly get either the Klein or the Blanchard and Kahn solutions.
 
 ## Using lre_auto
 
@@ -40,41 +40,17 @@ sim1
 sim2
 ```
 
-Then for the following simulation code:
+Then, running the simulate function included in the package as follows and plotting the result gives
 
 ```{r}
-simulate <- function(g, h, x0, t) {
-  n1 <- length(x0)
-  n2 <- length(g(x0))
-  
-  pre <- 1:n1
-  npr <- (n1 +1):(n1 + n2)
-  
-  out <- matrix(0,t, n1+n2)
-  
-  out[1,pre] <- x0
-  out[1, npr] <- g(x0)
-  
-  for (i in 1:(t-1)) {
-    out[i + 1, pre] <- h(out[i, pre])
-    out[i + 1, npr] <- g(out[i + 1, pre])
-  }
-  out
-}
-
-```
-
-Simulating the output of lre_auto will give:
-
-```{r}
-out1 <- simulate(sim1[[1]],sim1[[2]],x0,100)
+out1 <- lrem::simulate_no_shock(sim1[[1]],sim1[[2]],x0,100)
 plot(out1[,1])
 ```
 
 For the Blanchard and Kahn methods' solution and
 
 ```{r}
-out2 <- simulate(sim2[[1]],sim2[[2]],x0,100)
+out2 <- lrem::simulate_no_shock(sim2[[1]],sim2[[2]],x0,100)
 plot(out1[,1])
 ```
 

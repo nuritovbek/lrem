@@ -1,0 +1,134 @@
+---
+title: "Using the lre_ar function and getting the impulse response plots"
+author: "Ulugbek Nuritov"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+For the AR LRE, inputs are defined as follows:
+Matrices E and A in addition to a matrix B and $\Phi$ that satisfy the following system
+
+$Ex_{t+1} = Ax_t + Bu_t \\ u_{t+1} = \Phi u_t + e_t$ 
+Note that the shock follows an AR process.
+
+In addition the system also takes the following vector $x_{t} = (x^{1}_{t}, \ x^{2}_{t})^{t}$ where $x^{1}_{t}$ are predetermined variables, $x^{2}{t}$ are the nonpredetermined variables.
+
+The function in lre_ar then transforms these inputs to a system that satisfies.
+
+$$ \begin{bmatrix} I  \\  & E \end{bmatrix} \begin{bmatrix} u_{t + 1} \\ x_{t + 1} \end{bmatrix} = \begin{bmatrix} \Phi \\ B & A \end{bmatrix} \begin{bmatrix} u_{t} \\ x_{t} \end{bmatrix} $$
+
+## Replicating Hansen's RBC model
+
+Consider the following parameters, the specification of the model is ommitted but follows that specified in the course.
+
+
+```{r}
+alpha = 0.33
+beta = 0.99
+delta = 0.023
+chi = 1.75
+rho = 0.95
+```
+
+```{r}
+q0 = (1 - beta + beta * delta) / alpha / beta
+q1 = q0 ^ (1 / (1 - alpha))
+q2 = q0 - delta
+
+kbar = (1 - alpha) * q1 ^ (- alpha)
+kbar = kbar / ((1 - alpha) * q0 + chi * q2)
+
+cbar = q2 * kbar
+nbar = q1 * kbar
+zbar = 1
+```
+
+Where the matrices are
+
+```{r}
+E = matrix(0, 3, 3)
+A = matrix(0, 3, 3)
+B = matrix(0, 3, 1)
+Phi = matrix(rho, 1, 1)
+
+E[1, 1] = alpha * (alpha - 1) * q0
+E[1, 2] = alpha * q0
+E[1, 3] = - (1 - delta + alpha * q0)
+E[2, 1] = 1
+
+A[1, 3] = E[1, 3]
+A[2, 1] = - A[1, 3]
+A[2, 2] = (1 - alpha) * q0
+A[2, 3] = - q2
+A[3, 1] = alpha
+A[3, 2] = (- alpha - (1 - alpha) * nbar) / (1 - nbar)
+A[3, 3] = -1
+
+B[1, 1] = - alpha * q0 * rho
+B[2, 1] = q0
+B[3, 1] = 1
+```
+
+Proceeding with the simulation, the motion and decision rules are stored in the following
+
+```{r}
+sim <- lrem::lre_ar(A, E, B, Phi, n = 1)
+sim
+```
+
+Which are used in the simulation and standartised as follows
+
+```{r}
+# Simulation period
+steps <- 100
+
+# Path of the growth rates
+out <- lrem::simulate(sim[[1]], sim[[2]], x0 = c(0, 0), steps, e = c(1,0)) 
+out[1:10,]
+```
+
+Converting these into levels as per the example
+
+```{r}
+# Steady State
+ss <- c(zbar, kbar, nbar, cbar)
+
+# Convert percentage changes to levels
+for (i in 1:ncol(out)) {
+  out[, i] <- ss[i] * out[, i] + ss[i]
+}
+```
+
+Plotting the simulation results using the ggplot2 package
+
+```{r}
+library("ggplot2")
+```
+
+
+```{r}
+# Convert matrix to dataframe
+result <- data.frame(out)
+names(result) <- c("Z", "K", "N", "C")
+result["t"] <- 0:(steps - 1)
+
+# Plotting
+ggplot(result) + geom_line(aes(x = t, y = K))
+```
+
+```{r}
+ggplot(result) + geom_line(aes(x = t, y = Z))
+```
+
+```{r}
+ggplot(result) + geom_line(aes(x = t, y = N))
+```
+
+```{r}
+ggplot(result) + geom_line(aes(x = t, y = C))
+```
+

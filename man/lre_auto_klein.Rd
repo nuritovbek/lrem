@@ -2,7 +2,7 @@
 % Please edit documentation in R/lrem.R
 \name{lre_auto_klein}
 \alias{lre_auto_klein}
-\title{Solving an LRE model according to the Klein method with use of QZ decomposition}
+\title{Solving an autonomous LRE model according to the Klein method with use of QZ decomposition}
 \usage{
 lre_auto_klein(A, E, n)
 }
@@ -17,5 +17,5 @@ lre_auto_klein(A, E, n)
 Two functions g() and h() for a decision rule and law of motion respectively
 }
 \description{
-Solving an LRE model according to the Klein method with use of QZ decomposition
+Solving an autonomous LRE model according to the Klein method with use of QZ decomposition
 }

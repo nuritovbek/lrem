@@ -1,4 +1,4 @@
-#' Solving an LRE model according to Blanchard and Kahn
+#' Solving an autonomous LRE model according to Blanchard and Kahn
 #'
 #' @param A Coefficient matrix for the step function
 #' @param n Number of predetermined variables
@@ -17,9 +17,9 @@ lre_auto_bk <- function(A, n) {
   return(list(g,h))
 }
 
-##
+## ---------------------------------------------------------------------------------------------------------
 
-#' Solving an LRE model according to the Klein method with use of QZ decomposition
+#' Solving an autonomous LRE model according to the Klein method with use of QZ decomposition
 #'
 #' @param A Coefficient matrix on the previous step of the difference equation
 #' @param E Coefficient matrix of the current(next) step 
@@ -43,9 +43,9 @@ lre_auto_klein <- function(A, E, n) {
   
 }
 
-##
+## --------------------------------------------------------------------------------------------------------
 
-#' A combination of the Klein and Blanchard, Kahn methods. 
+#' A combination of the Klein and Blanchard, Kahn methods for the autonomous case. 
 #'
 #' @param A Coefficient matrix on x(t)
 #' @param E Coefficient matrix on x(t+1), if not given, the function evaluates the BK method
@@ -62,3 +62,28 @@ lre_auto <- function(A, E = NULL, n) {
     lre_auto_klein(A, E, n)
   }
 }
+
+## ------------------------------------------------------------------------------------------------------
+
+#' Solving LRE with exogenous shocks of the AR variety
+#'
+#' @param A Coefficient matrix on x(t)
+#' @param E Coefficient matrix on x(t+1)
+#' @param B Coefficient matrix on the error term u
+#' @param Phi The AR process for the error term
+#' @param n number of predetermined variables(excluding the exogenous shocks)
+#'
+#' @return Motion and decision rule functions for the LRE with AR exogenous shocks
+#' @export
+#'
+#' @examples
+lre_ar <- function(A, E, B, Phi, n) {
+  E1 <- dbind(diag(length(Phi)), E) # for new E
+  zerovec <- as.vector(matrix(0, nrow = dim(A)))
+  Ax <- rbind(zerovec, A)
+  Bx <- rbind(t(Phi), t(t(B)))
+  A1 <- cbind(Bx, Ax) # for new A 
+  n1 <- n + length(Phi)
+  lre_auto_klein(A1, E1, n1)
+}
+
